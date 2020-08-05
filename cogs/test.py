@@ -17,7 +17,7 @@ class testCog(commands.Cog):
 
 	def __init__(self, bot):
 		self.bot = bot
-
+		
 		self.test_task.start()
 
 	@tasks.loop(seconds=1.0, count=1)
@@ -34,7 +34,7 @@ class testCog(commands.Cog):
 
 	async def check_func(self, bot, channel):
 		while True:
-			await bot.get_channel(channel).send(f"{channel} : {datetime.datetime.now()}")
+			await bot.get_channel(channel).send(f"{self.bot.test_text} : {datetime.datetime.now()}")
 			await asyncio.sleep(0.7) 
 
 	@test_task.before_loop

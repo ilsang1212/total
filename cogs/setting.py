@@ -65,6 +65,7 @@ class settingCog(commands.Cog):
 					"restarttime" : "04:30",
 					"restartPeriod" : "1",
 					"game_name" : "",
+					"setting_finish" : False
 					}
 				self.bot.db.guild.guilds.insert_one(init_guild_db)
 
@@ -76,7 +77,7 @@ class settingCog(commands.Cog):
 	@commands.command(name="!보스업데이트", aliases=["보스업"])
 	async def command_guild_update(self, ctx : commands.Context, *, args : str = None):
 		if not args :
-			await ctx.send(f"업데이트할 보스 종류를 선택해주세요")
+			return await ctx.send(f"업데이트할 보스 종류를 선택해주세요")
 
 		filename : str = ""
 
@@ -85,22 +86,22 @@ class settingCog(commands.Cog):
 			boss_db = self.bot.db.boss.lin_m_boss
 		elif args == "린엠고정":
 			filename = "lin_m_fixed_boss.ini"
-			boss_db = self.bot.db.boss.lin_m_fixed
+			boss_db = self.bot.db.boss.lin_m_fixed_boss
 		elif args == "린2엠보스":
 			filename = "lin_2m_boss.ini"
 			boss_db = self.bot.db.boss.lin_2m_boss
 		elif args == "린2엠고정":
 			filename = "lin_2m_fixed_boss.ini"
-			boss_db = self.bot.db.boss.lin_2m_fixed
+			boss_db = self.bot.db.boss.lin_2m_fixed_boss
 		else:
-			await ctx.send(f"업데이트할 보스 종류를 잘못입력하셨습니다.")
+			await ctx.send(f"업데이트할 보스 종류를 잘못입력하셨습니다.(`린엠보스`, `린엠고정`, `린2엠보스`, `린2엠고정`")
 
 		boss_result = boss_utils.get_boss_data(filename, self.bot.repo)
 		
 		for boss_data in boss_result:
 			boss_db.update_one({"_id":boss_data["_id"]}, {"$set":boss_data}, upsert=True)
 
-		print("완료")
+		print("보스 업데이트 완료")
 		await ctx.send(f"`{args}` 보스 업데이트 완료!")
 
 def setup(bot):
