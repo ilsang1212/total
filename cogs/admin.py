@@ -9,7 +9,7 @@ from pymongo import MongoClient
 import pymongo, ssl, traceback, random
 from github import Github
 import base64
-import discordbot_jungsan
+import discordbot_total
 import checks, utils
 
 class adminCog(commands.Cog): 

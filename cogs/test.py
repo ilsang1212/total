@@ -22,12 +22,11 @@ class testCog(commands.Cog):
 
 	@tasks.loop(seconds=1.0, count=1)
 	async def test_task(self):
-		test_a = asyncio.Task(self.check_func(self.bot, 725194772205142106)).set_name("test_aaa")
-		# test_b = self.check_func(self.bot, 737123749513527346)
-		# test_c = self.check_func(self.bot, 725194772205142106)
-		# test_d = self.check_func(self.bot, 731050948620714014)
-		# test_e = self.check_func(self.bot, 696965026908471347)
-		
+		test_a = asyncio.Task(self.check_func(self.bot, 677399458924855296)).set_name("test_503909372511125504")
+		# test_b = asyncio.Task(self.check_func(self.bot, 696965026908471347)).set_name("test_bbb")
+		# test_c = asyncio.Task(self.check_func(self.bot, 731050948620714014)).set_name("test_ccc")
+		# test_d = asyncio.Task(self.check_func(self.bot, 725194772205142106)).set_name("test_ddd")
+		# test_e = asyncio.Task(self.check_func(self.bot, 737123749513527346)).set_name("test_eee")
 		await asyncio.gather(test_a)
 		# await asyncio.gather(test_a, test_b, test_c, test_d, test_e)
 
@@ -40,13 +39,18 @@ class testCog(commands.Cog):
 	async def before_test(self):
 		await self.bot.wait_until_ready()
 
+	@commands.command(name="테스트")
+	async def command_test(self, ctx : commands.Context):
+		await ctx.send("테스트")
+
 	################ 채널등록 ################ 
 	@commands.command(name="태스크")
 	async def command_task_list(self, ctx : commands.Context):
 		for t in asyncio.Task.all_tasks():
-			print(t._coro.__name__)
-			if t._coro.__name__ == "check_func":
-				print(t)
+			# print(t._coro.__name__)
+			if t.get_name() == f"test_{ctx.message.guild.id}":
+				print(t.get_name())
+				print('정지')
 				if t.done():
 					try:
 						t.exception()
@@ -54,8 +58,29 @@ class testCog(commands.Cog):
 						continue
 					continue
 				t.cancel()
-		print("태스크 다시시작")
-		test_a = asyncio.get_event_loop().create_task(self.check_func(self.bot, 737123749513527346))
+		print(f"태스크 {ctx.message.guild.name} 취소")
+
+		test_a = asyncio.get_event_loop().create_task(self.check_func(self.bot, 696965026908471347)).set_name(f"test_{ctx.message.guild.id}")
+
+	################ 채널등록 ################ 
+	@commands.command(name="태스크1")
+	async def command_task1_list(self, ctx : commands.Context):
+		for t in asyncio.Task.all_tasks():
+			# print(t._coro.__name__)
+			if t.get_name() == f"test_{ctx.message.guild.id}":
+				print(t.get_name())
+				print('정지')
+				if t.done():
+					try:
+						t.exception()
+					except asyncio.CancelledError:
+						continue
+					continue
+				t.cancel()
+		print(f"태스크 {ctx.message.guild.name} 취소")
+
+		test_a = asyncio.get_event_loop().create_task(self.check_func(self.bot, 731050948620714014)).set_name(f"test_{ctx.message.guild.id}")
+
 
 def setup(bot):
 	bot.add_cog(testCog(bot))
