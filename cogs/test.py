@@ -22,7 +22,8 @@ class testCog(commands.Cog):
 
 	@tasks.loop(seconds=1.0, count=1)
 	async def test_task(self):
-		test_a = asyncio.Task(self.check_func(self.bot, 677399458924855296)).set_name("test_503909372511125504")
+		print("tasks")
+		# test_a = asyncio.Task(self.check_func(self.bot, 677399458924855296)).set_name("test_503909372511125504")
 		# test_b = asyncio.Task(self.check_func(self.bot, 696965026908471347)).set_name("test_bbb")
 		# test_c = asyncio.Task(self.check_func(self.bot, 731050948620714014)).set_name("test_ccc")
 		# test_d = asyncio.Task(self.check_func(self.bot, 725194772205142106)).set_name("test_ddd")

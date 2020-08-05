@@ -1,4 +1,15 @@
+import asyncio
 import discord
+import datetime
+import logging
+from discord.ext import tasks, commands
+from discord.ext.commands import CommandNotFound, MissingRequiredArgument
+import aiohttp
+from pymongo import MongoClient
+import pymongo, ssl, traceback, random
+from github import Github
+import base64
+import discordbot_total
 
 #서버(길드) 정보 
 def get_guild_channel_info(bot):
@@ -20,25 +31,41 @@ def get_guild_channel_info(bot):
 	return guild_info, text_channel_name, text_channel_id, voice_channel_name, voice_channel_id
 
 #detail embed
-def get_detail_embed(info : dict = {}):
-	embed = discord.Embed(
-			title = "📜 등록 정보",
-			description = "",
-			color=0x00ff00
-			)
-	embed.add_field(name = "[ 순번 ]", value = f"```{info['_id']}```")
-	embed.add_field(name = "[ 등록 ]", value = f"```{info['regist']}```")
-	embed.add_field(name = "[ 일시 ]", value = f"```{info['getdate'].strftime('%y-%m-%d %H:%M:%S')}```", inline = False)
-	embed.add_field(name = "[ 보스 ]", value = f"```{info['boss']}```")
-	embed.add_field(name = "[ 아이템 ]", value = f"```{info['item']}```")
-	embed.add_field(name = "[ 루팅 ]", value = f"```{info['toggle']}```")
-	embed.add_field(name = "[ 상태 ]", value = f"```{info['itemstatus']}```")
-	embed.add_field(name = "[ 판매금 ]", value = f"```{info['price']}```")
-	if info['before_jungsan_ID']:
-		embed.add_field(name = "[ 정산전 ]", value = f"```{', '.join(info['before_jungsan_ID'])}```", inline = False)
-	if info['after_jungsan_ID']:
-		embed.add_field(name = "[ 정산후 ]", value = f"```{', '.join(info['after_jungsan_ID'])}```")
-	if 'image_url' in info.keys():
-		if info['image_url'] is not None:
-			embed.set_image(url = info['image_url'])
-	return embed
+def get_boss_data(filename : str, repo):
+	result : list = []
+	tmp_bossData : list = []
+	boss_data : dict = {}
+	
+	# bossname = 기감
+	# gentime = 01:00
+	# nogencheck = 0
+	# before_alert_ment = 입니다
+	# alert_ment = 입니다. 어여오세요
+
+	############## 보탐 명령어 리스트 #####################
+	boss_info_inidata = repo.get_contents(filename)
+	boss_file_data = base64.b64decode(boss_info_inidata.content)
+	boss_file_data = boss_file_data.decode('utf-8')
+	boss_info_inidata = boss_file_data.split('\n')
+
+	for i in range(boss_info_inidata.count('\r')):
+		boss_info_inidata.remove('\r')
+
+	if boss_info_inidata[0] == "----- 일반보스 -----":
+		del(boss_info_inidata[0])
+		bossNum = int(len(boss_info_inidata)/5)
+
+		for j in range(bossNum):
+			tmp_bossData.append(boss_info_inidata[j*5:j*5+5])
+			for i in range(len(tmp_bossData[j])):
+				tmp_bossData[j][i] = tmp_bossData[j][i].strip()
+	
+		for i in range(bossNum):
+			boss_data["_id"] = tmp_bossData[i][0][tmp_bossData[i][0].find("=")+2:].rstrip('\r')
+			boss_data["gentime"] = tmp_bossData[i][1][tmp_bossData[i][1].find("=")+2:].rstrip('\r')
+			boss_data["nogenchk"] = tmp_bossData[i][2][tmp_bossData[i][2].find("=")+2:].rstrip('\r')
+			boss_data["before_alert_ment"] = tmp_bossData[i][3][tmp_bossData[i][3].find("=")+2:].rstrip('\r')
+			boss_data["alert_ment"] = tmp_bossData[i][4][tmp_bossData[i][4].find("=")+2:].rstrip('\r')
+			result.append(boss_data)
+
+	return result

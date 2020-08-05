@@ -18,17 +18,19 @@ class adminCog(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	################ 현재시간 확인 ################ 
-	@commands.command(name=bot_setting._bosscommandSetting[37][0], aliases=bot_setting._bosscommandSetting[37][1:])
-	async def current_time_check(self, ctx):
-		if ctx.message.channel.id != int(self.bot.basicSetting[6]) or self.bot.basicSetting[6] == "":
-			return
+		self.guild_info_db = self.bot.db.boss.guilds
 
-		embed = discord.Embed(
-			title = f"현재시간은 {datetime.datetime.now().strftime('%H')}시 {datetime.datetime.now().strftime('%M')}분 {datetime.datetime.now().strftime('%S')}초 입니다.",
-			color=0xff00ff
-			)
-		return await ctx.send(embed = embed, tts=False)
+	# @commands.command(name = "프리픽스", aliases = ["ㅍㄹ"])
+	# async def prefix_add_(self, ctx: commands.Context, *, prefix : str):
+	# 	"""프리픽스 변경, 최대 10개 등록 가능"""
+	# 	if not prefix:
+	# 		return await ctx.send(f"변경할 prefix를 입력하세요.")
+
+	# 	prefix_list = prefix.split()
+
+	# 	await self.bot.set_guild_prefixes(ctx.guild, prefix_list)
+	# 	self.guild_info_db.update_one({"_id" : str(ctx.message.guild.id)}, {"$set" : {"guild_prefix":prefix_list}}, upsert=True)
+	# 	await ctx.send(f"prefix **[{prefix}]**로 변경완료!")
 
 def setup(bot):
   bot.add_cog(adminCog(bot))
