@@ -62,8 +62,6 @@ class settingCog(commands.Cog):
 					"mungChk" : "10",
 					"delmungcnt" : "5",
 					"bossInfoNum" : "3",
-					"restarttime" : "04:30",
-					"restartPeriod" : "1",
 					"game_name" : "",
 					"setting_finish" : False
 					}
