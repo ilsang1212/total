@@ -10,7 +10,7 @@ import pymongo, ssl, traceback, random
 from github import Github
 import base64
 import discordbot_total
-import checks, utils
+import checks, boss_utils
 
 class testCog(commands.Cog): 
 	bot_setting = discordbot_total.ilsang_total_bot
