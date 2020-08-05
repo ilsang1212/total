@@ -9,7 +9,6 @@ from pymongo import MongoClient
 import pymongo, ssl, traceback, random
 from github import Github
 import base64
-import discordbot_total
 
 #서버(길드) 정보 
 def get_guild_channel_info(bot):
@@ -30,28 +29,22 @@ def get_guild_channel_info(bot):
 
 	return guild_info, text_channel_name, text_channel_id, voice_channel_name, voice_channel_id
 
-#detail embed
+#보스 정보 추출
 def get_boss_data(filename : str, repo):
+	bossNum : int = 0
 	result : list = []
 	tmp_bossData : list = []
 	boss_data : dict = {}
-	
-	# bossname = 기감
-	# gentime = 01:00
-	# nogencheck = 0
-	# before_alert_ment = 입니다
-	# alert_ment = 입니다. 어여오세요
 
-	############## 보탐 명령어 리스트 #####################
 	boss_info_inidata = repo.get_contents(filename)
 	boss_file_data = base64.b64decode(boss_info_inidata.content)
 	boss_file_data = boss_file_data.decode('utf-8')
 	boss_info_inidata = boss_file_data.split('\n')
 
-	for i in range(boss_info_inidata.count('\r')):
-		boss_info_inidata.remove('\r')
+	for i in range(boss_info_inidata.count('')):
+		boss_info_inidata.remove('')
 
-	if boss_info_inidata[0] == "----- 일반보스 -----":
+	if  "----- 일반보스 -----" in boss_info_inidata[0]:
 		del(boss_info_inidata[0])
 		bossNum = int(len(boss_info_inidata)/5)
 
@@ -61,10 +54,30 @@ def get_boss_data(filename : str, repo):
 				tmp_bossData[j][i] = tmp_bossData[j][i].strip()
 	
 		for i in range(bossNum):
+			boss_data = {}
 			boss_data["_id"] = tmp_bossData[i][0][tmp_bossData[i][0].find("=")+2:].rstrip('\r')
 			boss_data["gentime"] = tmp_bossData[i][1][tmp_bossData[i][1].find("=")+2:].rstrip('\r')
 			boss_data["nogenchk"] = tmp_bossData[i][2][tmp_bossData[i][2].find("=")+2:].rstrip('\r')
 			boss_data["before_alert_ment"] = tmp_bossData[i][3][tmp_bossData[i][3].find("=")+2:].rstrip('\r')
 			boss_data["alert_ment"] = tmp_bossData[i][4][tmp_bossData[i][4].find("=")+2:].rstrip('\r')
 			result.append(boss_data)
+	else:
+		del(boss_info_inidata[0])
+		bossNum = int(len(boss_info_inidata)/6)
+
+		for j in range(bossNum):
+			tmp_bossData.append(boss_info_inidata[j*6:j*6+6])
+			for i in range(len(tmp_bossData[j])):
+				tmp_bossData[j][i] = tmp_bossData[j][i].strip()
+	
+		for i in range(bossNum):
+			boss_data = {}
+			boss_data["_id"] = tmp_bossData[i][0][tmp_bossData[i][0].find("=")+2:].rstrip('\r')
+			boss_data["bosstime"] = tmp_bossData[i][1][tmp_bossData[i][1].find("=")+2:].rstrip('\r')
+			boss_data["genPeriod"] = tmp_bossData[i][2][tmp_bossData[i][2].find("=")+2:].rstrip('\r')
+			boss_data["startDate"] = tmp_bossData[i][3][tmp_bossData[i][3].find("=")+2:].rstrip('\r')
+			boss_data["before_alert_ment"] = tmp_bossData[i][4][tmp_bossData[i][4].find("=")+2:].rstrip('\r')
+			boss_data["alert_ment"] = tmp_bossData[i][5][tmp_bossData[i][5].find("=")+2:].rstrip('\r')
+			result.append(boss_data)
+
 	return result

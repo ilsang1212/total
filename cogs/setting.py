@@ -40,14 +40,14 @@ class settingCog(commands.Cog):
 		await ctx.send(respond_text[:1999])
 
 	################ 채널등록 ################ 
-	@commands.command(name="!길드업데이트", aliases=["ㄱㄷ"])
+	@commands.command(name="!길드업데이트", aliases=["길드업"])
 	async def command_guild_update(self, ctx : commands.Context, *, cog_file_names : str = None):
-		guild_info, text_channel_name, text_channel_id, voice_channel_name, voice_channel_id = utils.get_guild_channel_info(self.bot)
+		guild_info, text_channel_name, text_channel_id, voice_channel_name, voice_channel_id = boss_utils.get_guild_channel_info(self.bot)
 		guild_db_info : list = []
 		init_guild_db : dict = {}
 
 		for guild in guild_info:
-			guild_document : dict = self.bot.db.boss.guilds.find_one({"_id": str(guild.id)})
+			guild_document : dict = self.bot.db.guild.guilds.find_one({"_id": str(guild.id)})
 			if not guild_document:
 				init_guild_db = {
 					"_id" : str(guild.id),
@@ -66,7 +66,7 @@ class settingCog(commands.Cog):
 					"restartPeriod" : "1",
 					"game_name" : "",
 					}
-				self.bot.db.boss.guilds.insert_one(init_guild_db)
+				self.bot.db.guild.guilds.insert_one(init_guild_db)
 
 		print(f"접속 길드 수 : {len(guild_info)}")
 		await ctx.send(f"길드 업데이트 완료!")
@@ -74,11 +74,34 @@ class settingCog(commands.Cog):
 
 	################ 채널등록 ################ 
 	@commands.command(name="!보스업데이트", aliases=["보스업"])
-	async def command_guild_update(self, ctx : commands.Context, *, cog_file_names : str = None):
-		lin_m_boss_result : dict = utils.get_boss_data("lin_m_boss.ini", self.bot.repo)
-		print(lin_m_boss_result)
-		await ctx.send(f"보스 업데이트 완료!")
+	async def command_guild_update(self, ctx : commands.Context, *, args : str = None):
+		if not args :
+			await ctx.send(f"업데이트할 보스 종류를 선택해주세요")
 
+		filename : str = ""
+
+		if args == "린엠보스":
+			filename = "lin_m_boss.ini"
+			boss_db = self.bot.db.boss.lin_m_boss
+		elif args == "린엠고정":
+			filename = "lin_m_fixed_boss.ini"
+			boss_db = self.bot.db.boss.lin_m_fixed
+		elif args == "린2엠보스":
+			filename = "lin_2m_boss.ini"
+			boss_db = self.bot.db.boss.lin_2m_boss
+		elif args == "린2엠고정":
+			filename = "lin_2m_fixed_boss.ini"
+			boss_db = self.bot.db.boss.lin_2m_fixed
+		else:
+			await ctx.send(f"업데이트할 보스 종류를 잘못입력하셨습니다.")
+
+		boss_result = boss_utils.get_boss_data(filename, self.bot.repo)
+		
+		for boss_data in boss_result:
+			boss_db.update_one({"_id":boss_data["_id"]}, {"$set":boss_data}, upsert=True)
+
+		print("완료")
+		await ctx.send(f"`{args}` 보스 업데이트 완료!")
 
 def setup(bot):
   bot.add_cog(settingCog(bot))
