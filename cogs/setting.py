@@ -19,7 +19,28 @@ class settingCog(commands.Cog):
 		self.bot = bot
 
 	################ 채널등록 ################ 
-	@commands.command(name="리로드", aliases=["ㄹ"])
+	@commands.command(name="!리로드", aliases=["ㄹ"])
+	async def command_reload_cog(self, ctx : commands.Context, *, cog_file_names : str = None):
+		reload_cog_file_list : list = self.bot.cog_list.copy() if not cog_file_names else cog_file_names.split()
+		respond_text : str = f"총 {len(reload_cog_file_list)}개의 리로드 결과:\n"
+
+		for cog_file_name in reload_cog_file_list:
+			try:
+				try:
+					self.bot.reload_extension(f"cogs.{cog_file_name}")
+				except:
+					self.bot.load_extension(f"cogs.{cog_file_name}")
+				respond_text += f"`{cog_file_name}` 로드 완료!\n"
+				if cog_file_name not in self.bot.cog_list:
+					self.bot.cog_list.append(cog_file_name)
+			except:
+				traceback_result : list = traceback.format_exc().split("\n")
+				respond_text += f"**`{cog_file_name}` 로드 실패!**\n```py\n{traceback_result}\n```"
+
+		await ctx.send(respond_text[:1999])
+
+	################ 채널등록 ################ 
+	@commands.command(name="!길드업데이트", aliases=["ㄱㄷ"])
 	async def command_reload_cog(self, ctx : commands.Context, *, cog_file_names : str = None):
 		reload_cog_file_list : list = self.bot.cog_list.copy() if not cog_file_names else cog_file_names.split()
 		respond_text : str = f"총 {len(reload_cog_file_list)}개의 리로드 결과:\n"

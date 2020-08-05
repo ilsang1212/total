@@ -18,7 +18,6 @@ class adminCog(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-
 	################ 현재시간 확인 ################ 
 	@commands.command(name=bot_setting._bosscommandSetting[37][0], aliases=bot_setting._bosscommandSetting[37][1:])
 	async def current_time_check(self, ctx):

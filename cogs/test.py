@@ -61,7 +61,7 @@ class testCog(commands.Cog):
 				t.cancel()
 		print(f"태스크 {ctx.message.guild.name} 취소")
 
-		test_a = asyncio.get_event_loop().create_task(self.check_func(self.bot, 696965026908471347)).set_name(f"test_{ctx.message.guild.id}")
+		# test_a = asyncio.get_event_loop().create_task(self.check_func(self.bot, 696965026908471347)).set_name(f"test_{ctx.message.guild.id}")
 
 def setup(bot):
 	bot.add_cog(testCog(bot))
