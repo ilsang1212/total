@@ -9,19 +9,14 @@ from pymongo import MongoClient
 import pymongo, ssl, traceback, random
 from github import Github
 import base64
-import discordbot_jungsan
+import discordbot_total
 import checks, utils
 
 class settingCog(commands.Cog): 
-	bot_setting = discordbot_jungsan.ilsang_distribution_bot
+	bot_setting = discordbot_total.ilsang_total_bot
 
 	def __init__(self, bot):
 		self.bot = bot
-
-		self.member_db = self.bot.db.jungsan.member
-		self.jungsan_db = self.bot.db.jungsan.jungsandata
-		self.guild_db = self.bot.db.jungsan.guild
-		self.guild_db_log = self.bot.db.jungsan.guild_log
 
 	################ 채널등록 ################ 
 	@commands.command(name="리로드", aliases=["ㄹ"])

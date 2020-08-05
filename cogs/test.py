@@ -9,11 +9,11 @@ from pymongo import MongoClient
 import pymongo, ssl, traceback, random
 from github import Github
 import base64
-import discordbot_jungsan
+import discordbot_total
 import checks, utils
 
 class testCog(commands.Cog): 
-	bot_setting = discordbot_jungsan.ilsang_distribution_bot
+	bot_setting = discordbot_total.ilsang_total_bot
 
 	def __init__(self, bot):
 		self.bot = bot
@@ -27,7 +27,8 @@ class testCog(commands.Cog):
 		# test_c = asyncio.Task(self.check_func(self.bot, 731050948620714014)).set_name("test_ccc")
 		# test_d = asyncio.Task(self.check_func(self.bot, 725194772205142106)).set_name("test_ddd")
 		# test_e = asyncio.Task(self.check_func(self.bot, 737123749513527346)).set_name("test_eee")
-		await asyncio.gather(test_a)
+		
+		# await asyncio.gather(test_a)
 		# await asyncio.gather(test_a, test_b, test_c, test_d, test_e)
 
 	async def check_func(self, bot, channel):
@@ -44,7 +45,7 @@ class testCog(commands.Cog):
 		await ctx.send("테스트")
 
 	################ 채널등록 ################ 
-	@commands.command(name="태스크")
+	@commands.command(name="명치")
 	async def command_task_list(self, ctx : commands.Context):
 		for t in asyncio.Task.all_tasks():
 			# print(t._coro.__name__)
@@ -61,26 +62,6 @@ class testCog(commands.Cog):
 		print(f"태스크 {ctx.message.guild.name} 취소")
 
 		test_a = asyncio.get_event_loop().create_task(self.check_func(self.bot, 696965026908471347)).set_name(f"test_{ctx.message.guild.id}")
-
-	################ 채널등록 ################ 
-	@commands.command(name="태스크1")
-	async def command_task1_list(self, ctx : commands.Context):
-		for t in asyncio.Task.all_tasks():
-			# print(t._coro.__name__)
-			if t.get_name() == f"test_{ctx.message.guild.id}":
-				print(t.get_name())
-				print('정지')
-				if t.done():
-					try:
-						t.exception()
-					except asyncio.CancelledError:
-						continue
-					continue
-				t.cancel()
-		print(f"태스크 {ctx.message.guild.name} 취소")
-
-		test_a = asyncio.get_event_loop().create_task(self.check_func(self.bot, 731050948620714014)).set_name(f"test_{ctx.message.guild.id}")
-
 
 def setup(bot):
 	bot.add_cog(testCog(bot))
