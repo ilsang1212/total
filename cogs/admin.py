@@ -21,8 +21,8 @@ class adminCog(commands.Cog):
 		self.boss_info_db = self.bot.db.boss
 		self.guild_info_db = self.bot.db.guild
 
-	@commands.has_permissions(manage_messages=True)
-	@commands.command(name = "!입장")
+	@commands.has_permissions(manage_guild=True)
+	@commands.command(name = bot_setting.bosscommandSetting[0][0], aliases = bot_setting.bosscommandSetting[0][1:])
 	async def text_channel_setting(self, ctx: commands.Context):
 		curr_text_channel = ctx.message.channel
 
@@ -53,12 +53,12 @@ class adminCog(commands.Cog):
 			self.bot.guild_setting_info = (str(ctx.guild.id), "textchannel", curr_text_channel.id)
 			self.guild_info_db.guilds.update_one({"_id" : str(ctx.guild.id)}, {"$set" : {"textchannel" : curr_text_channel.id}}, upsert=True)
 			print(f"{ctx.author.guild.name} 서버 : 명령어채널 [{curr_text_channel.name}] 설정완료!")
-			return await ctx.send(f"`명령어채널`이 **[{curr_text_channel.name}]** 채널로 새로 설정되었습니다.")
+			return await ctx.send(f"`명령어채널`이 **[{curr_text_channel.name}]** 채널로 설정되었습니다.")
 		else:
 			return await ctx.send(f"`명령어채널` 설정이 취소되었습니다.\n**[{set_text_channel_name}]** 채널에서 사용해주세요!")
 
-	@commands.has_permissions(manage_messages=True)
-	@commands.command(name = "!소환")
+	@commands.has_permissions(manage_guild=True)
+	@commands.command(name = bot_setting.bosscommandSetting[1][0], aliases = bot_setting.bosscommandSetting[1][1:])
 	async def voice_channel_setting(self, ctx: commands.Context):
 		if ctx.message.channel.id != int(self.bot.guild_setting_info[str(ctx.guild.id)]["textchannel"]):
 			return await ctx.send(f"`명령어채널`을 먼저 설정해 주시기 바랍니다.")
@@ -111,18 +111,18 @@ class adminCog(commands.Cog):
 			self.bot.guild_setting_info = (str(ctx.guild.id), "voicechannel", curr_voice_channel.id)
 			self.guild_info_db.guilds.update_one({"_id" : str(ctx.guild.id)}, {"$set" : {"voicechannel" : curr_voice_channel.id}}, upsert=True)
 			print(f"{ctx.author.guild.name} 서버 : 음성채널 [{curr_voice_channel.name}] 설정완료!")
-			return await ctx.send(f"`음성채널`이 **[{curr_voice_channel.name}]** 채널로 새로 설정되었습니다.")
+			return await ctx.send(f"`음성채널`이 **[{curr_voice_channel.name}]** 채널로 설정되었습니다.")
 		else:
 			return await ctx.send(f"`음성채널` 설정이 취소되었습니다.\n**[{set_voice_channel_name}]** 채널에서 사용해주세요!")
 
-	@commands.has_permissions(manage_messages=True)
-	@commands.command(name = "!게임설정")
+	@commands.has_permissions(manage_guild=True)
+	@commands.command(name = bot_setting.bosscommandSetting[2][0], aliases = bot_setting.bosscommandSetting[2][1:])
 	async def game_setting(self, ctx: commands.Context, *, game_name : str):
 		if ctx.message.channel.id != int(self.bot.guild_setting_info[str(ctx.guild.id)]["textchannel"]):
 			return await ctx.send(f"`명령어채널`을 먼저 설정해 주시기 바랍니다.")
 
 		if not game_name:
-			return await ctx.send(f"`게임이름`을 입력해주세요(`린엠`, `린2엠`).")
+			return await ctx.send(f"`게임이름`을 입력해주세요(`린엠`, `린2엠`)")
 
 		curr_game_name : str = self.bot.guild_setting_info[str(ctx.guild.id)]["game_name"]
 
@@ -130,7 +130,7 @@ class adminCog(commands.Cog):
 			return await ctx.send(f"현재 설정된 게임[`{curr_game_name}`]과 동일합니다.")
 		
 		if game_name not in ["린엠", "린2엠"]:
-			return await ctx.send(f"올바른 `게임이름`을 입력해주세요(`린엠`, `린2엠`).")
+			return await ctx.send(f"올바른 `게임이름`을 입력해주세요(`린엠`, `린2엠`)")
 
 		if self.guild_info_db.guilds_boss.find_one({"_id" : str(ctx.message.guild.id)}):
 			emoji_list : list = ["⭕", "❌"]
@@ -171,8 +171,8 @@ class adminCog(commands.Cog):
 		print(f"{ctx.message.guild.name} 서버 : 게임 [{game_name}] 설정완료!")
 		return await ctx.send(f"게임 [`{game_name}`] 설정완료!")
 
-	@commands.has_permissions(manage_messages=True)
-	@commands.command(name = "!채널설정")
+	@commands.has_permissions(manage_guild=True)
+	@commands.command(name = bot_setting.bosscommandSetting[3][0], aliases = bot_setting.bosscommandSetting[3][1:])
 	async def etc_channel_setting(self, ctx: commands.Context, *, args : str):
 		if ctx.message.channel.id != int(self.bot.guild_setting_info[str(ctx.guild.id)]["textchannel"]):
 			return await ctx.send(f"`명령어채널`을 먼저 설정해 주시기 바랍니다.")
@@ -187,7 +187,7 @@ class adminCog(commands.Cog):
 		elif args == "아이템":
 			key = "itemchannel"
 		else:
-			return await ctx.send(f"올바른 `명령어`를 입력바랍니다.(`게임`, `척살`, `아이템`")
+			return await ctx.send(f"올바른 `명령어`를 입력바랍니다.(`게임`, `척살`, `아이템`)")
 
 		curr_channel = ctx.message.channel
 
@@ -218,16 +218,57 @@ class adminCog(commands.Cog):
 			self.bot.guild_setting_info = (str(ctx.guild.id), key, curr_channel.id)
 			self.guild_info_db.guilds.update_one({"_id" : str(ctx.guild.id)}, {"$set" : {key : curr_channel.id}}, upsert=True)
 			print(f"{ctx.author.guild.name} 서버 : {args}채널 [{curr_channel.name}] 설정완료!")
-			return await ctx.send(f"`{args}채널`이 **[{curr_channel.name}]** 채널로 새로 설정되었습니다.")
+			return await ctx.send(f"`{args}채널`이 **[{curr_channel.name}]** 채널로 설정되었습니다.")
 		else:
 			return await ctx.send(f"`{args}채널` 설정이 취소되었습니다.\n**[{set_channel_name}]** 채널에서 사용해주세요!")
 
+	@commands.has_permissions(manage_guild=True)
+	@commands.command(name = bot_setting.bosscommandSetting[4][0], aliases = bot_setting.bosscommandSetting[4][1:])
+	async def etc_value_setting(self, ctx: commands.Context, *, args : str):
+		if ctx.message.channel.id != int(self.bot.guild_setting_info[str(ctx.guild.id)]["textchannel"]):
+			return await ctx.send(f"`명령어채널`을 먼저 설정해 주시기 바랍니다.")
+
+		input_value : list = args.split()
+
+		if len(input_value) != 2:
+			return await ctx.send(f"변경을 원하는 `설정` 및 `값`을 입력바랍니다.(설정 : `알림1`, `알림2`, `자동멍`, `멍삭제`)")
+		
+		try:
+				input_value[1] = int(input_value[1])
+		except ValueError:
+			return await ctx.send(f"`값`은 숫자로 입력바랍니다.")
+
+		tmp_str : str = "분"
+
+		if input_value[0] == "알림1":
+			key = "before_alert"
+		elif input_value[0] == "알림2":
+			key = "before_alert1"
+		elif input_value[0] == "자동멍":
+			key = "mungChk"
+		elif input_value[0] == "멍삭제":
+			key = "delmungcnt"
+			tmp_str = "회"
+		else:
+			return await ctx.send(f"올바른 `명령어`를 입력바랍니다.(`알림1`, `알림2`, `자동멍`, `멍삭제`)")
+
+		if input_value[1] == int(self.bot.guild_setting_info[str(ctx.guild.id)][key]):
+			return await ctx.send(f"현재 설정된 `{input_value[0]}`값(`{int(self.bot.guild_setting_info[str(ctx.guild.id)][key])}{tmp_str}`)이 입력된 값(`{input_value[1]}{tmp_str}`)과 동일합니다.")
+
+		set_value : str = input_value[1]
+
+		self.bot.guild_setting_info = (str(ctx.guild.id), key, set_value)
+		self.guild_info_db.guilds.update_one({"_id" : str(ctx.guild.id)}, {"$set" : {key : set_value}}, upsert=True)
+		print(f"{ctx.author.guild.name} 서버 : {input_value[0]}값 [{input_value[1]}{tmp_str}] 설정완료!")
+		return await ctx.send(f"`{input_value[0]}`값이 **[{input_value[1]}{tmp_str}]**(으)로 설정되었습니다.")
+
 	@commands.command(name = "변경")
 	async def test_setting(self, ctx: commands.Context, *, args : str):
+		print(self.bot.test_text)		
+		print("a")
 		self.bot.test_text = args
+		print(self.bot.test_text)
 		return 
-
+		
 def setup(bot):
   bot.add_cog(adminCog(bot))
-
-
