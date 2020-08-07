@@ -112,7 +112,8 @@ def set_boss_data(boss_info_db : list, flag : str = "boss", timezone : int = 9):
 			tmp_dict[boss_info["_id"]]["bossFlag0"] = False
 			tmp_dict[boss_info["_id"]]["bossMungFlag"] = False
 			tmp_dict[boss_info["_id"]]["bossMungCnt"] = 0
-			tmp_dict[boss_info["_id"]]["bossNick"] = boss_info["_id"]
+			tmp_dict[boss_info["_id"]]["bossNick"] = boss_info["_id"],
+			tmp_dict[boss_info["_id"]]["bossUse"] = True
 			del (tmp_dict[boss_info["_id"]]["_id"])
 			result.append(tmp_dict)
 	else:
@@ -124,6 +125,7 @@ def set_boss_data(boss_info_db : list, flag : str = "boss", timezone : int = 9):
 			tmp_dict[boss_info["_id"]] = boss_info.copy()
 			tmp_dict[boss_info["_id"]]["bossName"] = boss_info["_id"]
 			tmp_dict[boss_info["_id"]]["bossNick"] = boss_info["_id"][:boss_info["_id"].find("_")]
+			tmp_dict[boss_info["_id"]]["bossUse"] = True,
 			tmp_dict[boss_info["_id"]]["fixed_bossFlag"] = False
 			tmp_dict[boss_info["_id"]]["fixed_bossFlag0"] = False
 			tmp_dict[boss_info["_id"]]["fixed_bossTime"] = tmp_fixed_now.replace(year = int(tmp_dict[boss_info["_id"]]["startDate"][0:4]), month = int(tmp_dict[boss_info["_id"]]["startDate"][5:7]), day = int(tmp_dict[boss_info["_id"]]["startDate"][8:10]), hour=int(tmp_dict[boss_info["_id"]]["bosstime"][0:tmp_fixed_len]), minute=int(tmp_dict[boss_info["_id"]]["bosstime"][tmp_fixed_len+1:]), second = int(0))

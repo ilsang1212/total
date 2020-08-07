@@ -134,7 +134,7 @@ class adminCog(commands.Cog):
 
 		if self.guild_info_db.guilds_boss.find_one({"_id" : str(ctx.message.guild.id)}):
 			emoji_list : list = ["⭕", "❌"]
-			game_delete_message = await ctx.send(f"현재 [`{curr_game_name}`] 보스 정보로 설정되어 있습니다.\n해당 게임 보스 정보를 삭제하고 {game_name}(으)로 변경하시려면 ⭕ 그대로 사용하시려면 ❌ 를 눌러주세요.\n(10초이내 미입력시 기존 게임 그대로 설정됩니다.)", tts=False)
+			game_delete_message = await ctx.send(f"현재 [`{curr_game_name}`] 정보로 설정되어 있습니다.\n해당 게임 정보를 삭제하고 `{game_name}` 정보로 변경하시려면 ⭕ 그대로 사용하시려면 ❌ 를 눌러주세요.\n(10초이내 미입력시 기존 게임 그대로 설정됩니다.)", tts=False)
 
 			for emoji in emoji_list:
 				await game_delete_message.add_reaction(emoji)
@@ -144,12 +144,14 @@ class adminCog(commands.Cog):
 			try:
 				reaction, user = await self.bot.wait_for('reaction_add', check = reaction_check, timeout = 10)
 			except asyncio.TimeoutError:
-				return await ctx.send(f"시간이 초과됐습니다. [`{curr_game_name}`] 보스 설정을 사용합니다.")
+				return await ctx.send(f"시간이 초과됐습니다. [`{curr_game_name}`] 설정을 사용합니다.")
 
 			if str(reaction) == "⭕":
 				self.guild_info_db.guilds_boss.delete_one({"_id" : str(ctx.message.guild.id)})
 			else:
-				return await ctx.send(f"[`{game_name}`] 보스 설정이 취소되었습니다!\n[`{curr_game_name}`] 보스 설정을 사용합니다.")
+				return await ctx.send(f"[`{game_name}`] 설정이 취소되었습니다!\n[`{curr_game_name}`] 설정을 사용합니다.")
+
+		await ctx.send(f"`{game_name}` 정보를 설정합니다.\n게임 설정에 다소 `시간`이 걸립니다.\n`완료 메세지`가 나올 때까지 기다려주시기 바랍니다.")
 
 		boss_data : list = []
 		fixed_boss_data : list = []
