@@ -94,7 +94,7 @@ def get_boss_data(filename : str, repo):
 
 	return result
 
-	#보스 정보 입력
+#보스 정보 입력
 def set_boss_data(boss_info_db : list, flag : str = "boss", timezone : int = 9):
 	result : list = []
 	tmp_dict : dict = {}
@@ -134,6 +134,41 @@ def set_boss_data(boss_info_db : list, flag : str = "boss", timezone : int = 9):
 					tmp_dict[boss_info["_id"]]["fixed_bossTime"] = tmp_dict[boss_info["_id"]]["fixed_bossTime"] + datetime.timedelta(hours=int(tmp_dict[boss_info["_id"]]["genPeriod"][0:tmp_fixed_gen_len]), minutes=int(tmp_dict[boss_info["_id"]]["genPeriod"][tmp_fixed_gen_len+1:]), seconds = int(0))
 			del (tmp_dict[boss_info["_id"]]["_id"])
 			result.append(tmp_dict)
+
+	return result
+
+#명령어 정보 추출 
+def get_command_data(filename : str, repo):
+	result : list = []
+	tmp_dict : dict = {}
+	tmp_str : str = ""
+	command_info_inidata = repo.get_contents(filename)
+	command_file_data = base64.b64decode(command_info_inidata.content)
+	command_file_data = command_file_data.decode('utf-8')
+	command_info_inidata = command_file_data.split('\n')
+
+	for i in range(command_info_inidata.count('')):
+		command_info_inidata.remove('')
+
+	for command_info in command_info_inidata:
+		tmp_dict = {}
+		tmp_str = command_info[command_info.find("=")+2:].rstrip("\r").split(", ")
+		if len(tmp_str) > 0:
+			tmp_dict["_id"] = tmp_str[0]
+			tmp_dict["command"] = tmp_str
+			result.append(tmp_dict)		
+
+	return result
+
+#명령어 정보 설정
+def set_command_data(command_info_db : list):
+	result : list = []
+	# tmp_dict : dict = {}
+	# for command_info in command_info_db:
+	# 	tmp_dict = {}
+	# 	tmp_dict[command_info["_id"]] = command_info.copy()
+	# 	del (tmp_dict[command_info["_id"]]["_id"])
+	# 	result.append(tmp_dict)
 
 	return result
 
