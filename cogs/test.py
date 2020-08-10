@@ -9,12 +9,9 @@ from pymongo import MongoClient
 import pymongo, ssl, traceback, random
 from github import Github
 import base64
-import discordbot_total
 import checks, boss_utils
 
 class testCog(commands.Cog): 
-	bot_setting = discordbot_total.ilsang_total_bot
-
 	def __init__(self, bot):
 		self.bot = bot
 		
